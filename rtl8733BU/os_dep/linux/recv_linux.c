@@ -399,7 +399,7 @@ static int napi_recv(_adapter *padapter, int budget)
 		rx_ok = _FALSE;
 
 #ifdef CONFIG_RTW_GRO
-		/*	 
+		/*
 			cloned SKB use dataref to avoid kernel release it.
 			But dataref changed in napi_gro_receive.
 			So, we should prevent cloned SKB go into napi_gro_receive.
