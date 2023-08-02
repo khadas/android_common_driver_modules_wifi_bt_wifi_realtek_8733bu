@@ -517,8 +517,13 @@ static void process_c2h_event(PADAPTER adapter, u8 *c2h, u32 size)
 	pc2h_data = c2h + desc_size;
 	c2h_len = size - desc_size;
 
-	id = C2H_GET_CMD_ID(pc2h_data);
-	seq = C2H_GET_SEQ(pc2h_data);
+	if (c2h_len >= 4) {
+		id = C2H_GET_CMD_ID(pc2h_data);
+		seq = C2H_GET_SEQ(pc2h_data);
+	} else {
+		id = C2H_GET_CMD_ID_1BYTE(pc2h_data);
+		seq = C2H_GET_SEQ_1BYTE(pc2h_data);
+	}
 
 	/* shift 2 byte to remove cmd id & seq */
 	pc2h_payload = pc2h_data + 2;
