@@ -285,6 +285,11 @@ void sreset_reset(_adapter *padapter)
 
 	RTW_INFO("%s\n", __FUNCTION__);
 
+	if (!rtw_is_hw_init_completed(padapter)) {
+		RTW_INFO("hardware init not yet done\n");
+		return;
+	}
+
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 
 
@@ -298,6 +303,17 @@ void sreset_reset(_adapter *padapter)
 	pwrpriv->change_rfpwrstate = rf_off;
 
 	rtw_mi_sreset_adapter_hdl(padapter, _FALSE);/*sreset_stop_adapter*/
+
+#ifdef CONFIG_USB_HCI
+	if (psdpriv->dev_shutting_down)
+	{
+		RTW_INFO("device is shutting down\n");
+		return;
+	}
+
+	_enter_critical_mutex(&psdpriv->sreset_mutex, NULL);
+#endif
+
 #ifdef CONFIG_IPS
 	_ips_enter(padapter);
 	_ips_leave(padapter);
@@ -316,5 +332,8 @@ void sreset_reset(_adapter *padapter)
 
 	psrtpriv->self_dect_fw = _FALSE;
 	psrtpriv->rx_cnt = 0;
+#ifdef CONFIG_USB_HCI
+	_exit_critical_mutex(&psdpriv->sreset_mutex, NULL);
+#endif
 #endif
 }

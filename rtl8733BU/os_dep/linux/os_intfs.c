@@ -2636,6 +2636,8 @@ struct dvobj_priv *devobj_init(void)
 #endif
 
 	pdvobj->processing_dev_remove = _FALSE;
+	pdvobj->dev_shutting_down = _FALSE;
+	_rtw_mutex_init(&pdvobj->sreset_mutex);
 
 	ATOMIC_SET(&pdvobj->disable_func, 0);
 
@@ -2726,6 +2728,7 @@ void devobj_deinit(struct dvobj_priv *pdvobj)
 	_rtw_mutex_free(&pdvobj->protsel_macsleep.mutex);
 #endif
 
+	_rtw_mutex_free(&pdvobj->sreset_mutex);
 	_rtw_mutex_free(&pdvobj->setch_mutex);
 	_rtw_mutex_free(&pdvobj->setbw_mutex);
 	_rtw_mutex_free(&pdvobj->rf_read_reg_mutex);

@@ -1431,6 +1431,9 @@ struct dvobj_priv {
 	struct usb_device *pusbdev;
 #endif/* PLATFORM_FREEBSD */
 
+	_mutex sreset_mutex;
+	u8 dev_shutting_down;
+
 #endif/* CONFIG_USB_HCI */
 
 	/*-------- below is for PCIE INTERFACE --------*/

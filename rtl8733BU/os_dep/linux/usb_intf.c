@@ -55,10 +55,19 @@ static void rtw_dev_shutdown(struct device *dev)
 		dvobj = usb_get_intfdata(usb_intf);
 		if (dvobj) {
 			adapter = dvobj_get_primary_adapter(dvobj);
+			dvobj->dev_shutting_down = _TRUE;
 			if (adapter) {
 				if (!rtw_is_surprise_removed(adapter)) {
 					#ifdef CONFIG_WOWLAN
 					struct pwrctrl_priv *pwrctl = adapter_to_pwrctl(adapter);
+					#endif
+
+					if (!rtw_is_hw_init_completed(adapter)) {
+						RTW_INFO("hardware init not yet done\n");
+						return;
+					}
+					_enter_critical_mutex(&dvobj->sreset_mutex, NULL);
+					#ifdef CONFIG_WOWLAN
 
 					#ifdef CONFIG_GPIO_WAKEUP
 					/*default wake up pin change to BT*/
@@ -91,6 +100,7 @@ static void rtw_dev_shutdown(struct device *dev)
 						rtw_hal_deinit(adapter);
 						rtw_set_surprise_removed(adapter);
 					}
+					_exit_critical_mutex(&dvobj->sreset_mutex, NULL );
 				}
 			}
 			ATOMIC_SET(&dvobj->continual_io_error, MAX_CONTINUAL_IO_ERR + 1);
